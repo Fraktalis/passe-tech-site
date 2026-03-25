@@ -1,0 +1,63 @@
+---
+import Layout from '../layouts/Layout.astro';
+import VideoCard from '../components/VideoCard.astro';
+
+// Fetch all videos from YouTube at build time
+let videos: { title: string; thumbnail: string; url: string; date: string; description: string }[] = [];
+
+const API_KEY = import.meta.env.YOUTUBE_API_KEY;
+const CHANNEL_ID = import.meta.env.YOUTUBE_CHANNEL_ID;
+
+if (API_KEY && CHANNEL_ID) {
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet&order=date&maxResults=50&type=video`
+    );
+    const data = await res.json();
+    videos = (data.items ?? []).map((item: any) => ({
+      title: item.snippet.title,
+      thumbnail: item.snippet.thumbnails.high?.url ?? item.snippet.thumbnails.default.url,
+      url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+      date: new Date(item.snippet.publishedAt).toLocaleDateString('fr-FR'),
+      description: item.snippet.description,
+    }));
+  } catch (e) {
+    console.warn('YouTube API fetch failed:', e);
+  }
+}
+---
+
+<Layout title="Vidéos">
+  <section class="section">
+    <h2><span class="accent-r">▶</span> Toutes les vidéos</h2>
+    <p class="section-intro">Les vidéos de la chaîne, de la plus récente à la plus ancienne.</p>
+
+    {videos.length > 0 ? (
+      <div class="card-grid">
+        {videos.map(v => (
+          <VideoCard {...v} />
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">
+        <p>Les vidéos apparaîtront ici automatiquement une fois l'API YouTube configurée.</p>
+        <a href="https://www.youtube.com/@Passe-Tech" class="btn btn-rose" target="_blank" rel="noopener">
+          ▶ Voir sur YouTube
+        </a>
+      </div>
+    )}
+  </section>
+</Layout>
+
+<style>
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--ghost);
+  }
+
+  .empty-state p {
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+  }
+</style>

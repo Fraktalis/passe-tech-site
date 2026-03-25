@@ -1,0 +1,178 @@
+/* ═══════════════════════════════════════════
+   Passe-Tech - Palette pastèque
+   ═══════════════════════════════════════════ */
+
+:root {
+  --bg:    #111210;
+  --bg2:   #0D1117;
+  --rose:  #FF3E6C;
+  --vert:  #6DFF8A;
+  --jaune: #FFE14D;
+  --cream: #F9F9F6;
+  --ghost: #484F58;
+  --card:  #161B22;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--cream);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--vert); }
+a:hover { color: var(--cream); }
+
+/* ─── UTILITIES ─── */
+
+.section {
+  padding: 5rem 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.section-dark {
+  max-width: 100%;
+  background: var(--bg2);
+}
+
+.section-dark > h2,
+.section-dark > p,
+.section-dark > div {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 2.5rem;
+  letter-spacing: 0.03em;
+  margin-bottom: 1rem;
+}
+
+.section-intro {
+  color: var(--ghost);
+  margin-bottom: 2.5rem;
+  font-size: 1.05rem;
+}
+
+.accent-r { color: var(--rose); }
+.accent-g { color: var(--vert); }
+.accent-y { color: var(--jaune); }
+
+/* ─── BUTTONS ─── */
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn:hover { transform: translateY(-2px); }
+
+.btn-rose {
+  background: var(--rose);
+  color: var(--bg);
+  box-shadow: 0 0 20px rgba(255, 62, 108, 0.3);
+}
+.btn-rose:hover { box-shadow: 0 0 30px rgba(255, 62, 108, 0.5); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid var(--ghost);
+}
+.btn-ghost:hover { border-color: var(--cream); }
+
+/* ─── CARDS ─── */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--ghost);
+  border-radius: 10px;
+  padding: 2rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ─── MARKDOWN CONTENT ─── */
+
+.prose h1, .prose h2, .prose h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+.prose h1 { font-size: 2.5rem; }
+.prose h2 { font-size: 2rem; }
+.prose h3 { font-size: 1.5rem; }
+
+.prose p {
+  margin-bottom: 1rem;
+  color: var(--cream);
+}
+
+.prose code {
+  font-family: 'DM Mono', monospace;
+  background: var(--card);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.prose pre {
+  background: var(--bg2);
+  border: 1px solid var(--ghost);
+  border-radius: 8px;
+  padding: 1.2rem;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.prose ul, .prose ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.prose li { margin-bottom: 0.3rem; }
+
+.prose a { color: var(--vert); }
+.prose a:hover { color: var(--jaune); }
+
+.prose blockquote {
+  border-left: 3px solid var(--rose);
+  padding-left: 1rem;
+  color: var(--ghost);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+/* ─── RESPONSIVE ─── */
+
+@media (max-width: 600px) {
+  .section { padding: 3rem 1.2rem; }
+}

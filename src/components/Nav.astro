@@ -1,0 +1,72 @@
+---
+const base = import.meta.env.BASE_URL;
+const currentPath = Astro.url.pathname;
+
+const links = [
+  { href: '/', label: 'Accueil' },
+  { href: '/about/', label: 'À propos' },
+  { href: '/videos/', label: 'Vidéos' },
+  { href: '/resources/', label: 'Ressources' },
+];
+---
+
+<nav>
+  <a href={base} class="nav-brand">🍉 PASSE-TECH</a>
+  <div class="nav-links">
+    {links.map(link => (
+      <a
+        href={`${base}${link.href}`.replace('//', '/')}
+        class:list={[{ active: currentPath.endsWith(link.href) }]}
+      >
+        {link.label}
+      </a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--ghost);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .nav-brand {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: var(--cream);
+    letter-spacing: 0.03em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--ghost);
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--cream);
+  }
+
+  @media (max-width: 600px) {
+    nav { flex-direction: column; gap: 0.8rem; }
+    .nav-links { gap: 1rem; }
+  }
+</style>

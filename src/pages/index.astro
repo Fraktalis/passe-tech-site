@@ -1,0 +1,147 @@
+---
+import Layout from '../layouts/Layout.astro';
+import VideoCard from '../components/VideoCard.astro';
+
+// Fetch latest videos from YouTube at build time
+let videos: { title: string; thumbnail: string; url: string; date: string; description: string }[] = [];
+
+const API_KEY = import.meta.env.YOUTUBE_API_KEY;
+const CHANNEL_ID = import.meta.env.YOUTUBE_CHANNEL_ID;
+
+if (API_KEY && CHANNEL_ID) {
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet&order=date&maxResults=6&type=video`
+    );
+    const data = await res.json();
+    videos = (data.items ?? []).map((item: any) => ({
+      title: item.snippet.title,
+      thumbnail: item.snippet.thumbnails.high?.url ?? item.snippet.thumbnails.default.url,
+      url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+      date: new Date(item.snippet.publishedAt).toLocaleDateString('fr-FR'),
+      description: item.snippet.description,
+    }));
+  } catch (e) {
+    console.warn('YouTube API fetch failed:', e);
+  }
+}
+---
+
+<Layout title="Accueil">
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-content">
+      <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Passe-Tech" class="hero-logo" />
+      <p class="hero-tagline">La tech expliquée avec <em>rigueur</em> et <em>humour</em>.</p>
+      <p class="hero-sub">Par Alex - ingénieur senior IA, DevOps &amp; 3D médicale.</p>
+      <div class="hero-cta">
+        <a href="https://www.youtube.com/@Passe-Tech" class="btn btn-rose" target="_blank" rel="noopener">
+          ▶ YouTube
+        </a>
+        <a href={`${import.meta.env.BASE_URL}about/`} class="btn btn-ghost">En savoir plus</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- DERNIÈRES VIDÉOS -->
+  {videos.length > 0 && (
+    <section class="section" id="latest">
+      <h2><span class="accent-r">▶</span> Dernières vidéos</h2>
+      <div class="card-grid">
+        {videos.map(v => (
+          <VideoCard {...v} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- DOMAINES -->
+  <section class="section" id="domains">
+    <h2><span class="accent-g">01</span> Domaines</h2>
+    <div class="card-grid">
+      <div class="card domain-card">
+        <span class="card-icon">🤖</span>
+        <h3>Intelligence Artificielle</h3>
+        <p>Du deep learning aux neurones biologiques, en passant par les LLMs et la sécurité des modèles.</p>
+      </div>
+      <div class="card domain-card">
+        <span class="card-icon">🐳</span>
+        <h3>DevOps &amp; Infrastructure</h3>
+        <p>Conteneurs, namespaces, CI/CD - comment fonctionne la plomberie du cloud moderne.</p>
+      </div>
+      <div class="card domain-card">
+        <span class="card-icon">🧠</span>
+        <h3>3D Médicale</h3>
+        <p>Visualisation scientifique, imagerie et interfaces entre le code et le vivant.</p>
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  .hero {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    background:
+      radial-gradient(ellipse at 30% 50%, rgba(109, 255, 138, 0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 70% 50%, rgba(255, 62, 108, 0.06) 0%, transparent 60%),
+      var(--bg);
+  }
+
+  .hero-logo {
+    width: clamp(280px, 45vw, 550px);
+    height: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-tagline {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 300;
+    margin-bottom: 0.4rem;
+  }
+
+  .hero-tagline em {
+    font-style: normal;
+    color: var(--vert);
+    font-weight: 700;
+  }
+
+  .hero-sub {
+    color: var(--ghost);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .domain-card h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .domain-card p {
+    color: var(--ghost);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .domain-card:hover {
+    border-color: var(--vert);
+    box-shadow: 0 0 20px rgba(109, 255, 138, 0.1);
+  }
+
+  .card-icon { font-size: 2rem; display: block; margin-bottom: 0.8rem; }
+</style>

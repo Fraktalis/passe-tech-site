@@ -1,0 +1,73 @@
+---
+interface Props {
+  title: string;
+  thumbnail: string;
+  url: string;
+  date: string;
+  description?: string;
+}
+
+const { title, thumbnail, url, date, description } = Astro.props;
+---
+
+<a href={url} class="video-card" target="_blank" rel="noopener">
+  <img src={thumbnail} alt={title} class="video-thumb" loading="lazy" />
+  <div class="video-info">
+    <h3>{title}</h3>
+    <time>{date}</time>
+    {description && <p>{description}</p>}
+  </div>
+</a>
+
+<style>
+  .video-card {
+    background: var(--card);
+    border: 1px solid var(--ghost);
+    border-radius: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--cream);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .video-card:hover {
+    border-color: var(--rose);
+    box-shadow: 0 0 20px rgba(255, 62, 108, 0.1);
+  }
+
+  .video-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+  }
+
+  .video-info {
+    padding: 1rem 1.2rem;
+  }
+
+  .video-info h3 {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+  }
+
+  .video-info time {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ghost);
+  }
+
+  .video-info p {
+    color: var(--ghost);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

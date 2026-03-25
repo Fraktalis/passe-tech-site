@@ -1,0 +1,78 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="À propos">
+  <section class="section">
+    <h2><span class="accent-g">🍉</span> À propos</h2>
+
+    <div class="about-content prose">
+      <p>
+        <strong>Passe-Tech</strong>, c'est une chaîne YouTube de vulgarisation tech
+        tenue par Alex, ingénieur senior avec un pied dans l'IA, un autre dans le DevOps,
+        et les mains dans la 3D médicale. J'aime apprendre de nouvelles choses, et surtout les partager !
+      </p>
+
+      <h3>La philosophie</h3>
+      <p>
+        Pas de phrases creuses, pas de jargon non expliqué, pas de bullshit.
+        Si une techno est surcotée, on le dit. Si un concept est compliqué,
+        on prend le temps de l'expliquer - avec des métaphores concrètes. 
+      </p>
+      <p>
+        Le ton : Bienveillant, Instructif et complice, jamais condescendant (en tout cas, c'est mon objectif).
+      </p>
+
+      <h3>L'audience</h3>
+      <ul>
+        <li>Curieux tech (de 7 à 77 ans!) qui veulent comprendre comment ça marche vraiment</li>
+        <li>Pros en reconversion qui cherchent des explications rigoureuses</li>
+        <li>Geeks libristes qui veulent du fond, pas du buzz</li>
+      </ul>
+
+      <h3>Contact</h3>
+      <p>
+        Pour les collabs, questions techniques, ou juste dire bonjour :
+      </p>
+      <div class="contact-links">
+        <a href="https://www.youtube.com/@Passe-Tech" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://github.com/Fraktalis" target="_blank" rel="noopener">GitHub</a>
+        <a href="mailto:contact-pro@passe-tech.fr?subject=%5BPasse-Tech%5D%20Prise%20de%20contact">Mon email !</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about-content {
+    max-width: 680px;
+  }
+
+  .about-content em {
+    color: var(--vert);
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .contact-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .contact-links a {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--vert);
+    text-decoration: none;
+    padding: 0.5rem 1.2rem;
+    border: 1px solid var(--vert);
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .contact-links a:hover {
+    background: var(--vert);
+    color: var(--bg);
+  }
+</style>

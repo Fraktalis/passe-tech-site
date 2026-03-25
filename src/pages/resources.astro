@@ -1,0 +1,325 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Import all markdown files from content/resources (keep path for slug)
+const resourceFiles = Object.entries(
+  import.meta.glob<{ frontmatter: any; default: any }>('../content/resources/*.md', { eager: true })
+).map(([path, mod]) => ({
+  ...mod,
+  slug: path.split('/').pop()?.replace('.md', '') ?? '',
+})).sort((a, b) =>
+  new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+);
+
+// Collect all unique tags
+const allTags = [...new Set(resourceFiles.flatMap(r => r.frontmatter.tags ?? []))].sort();
+---
+
+<Layout title="Ressources">
+  <section class="section">
+    <h2><span class="accent-y">03</span> Ressources</h2>
+    <p class="section-intro">Sources, outils et liens mentionnés dans les vidéos.</p>
+
+    {resourceFiles.length > 0 ? (
+      <>
+        <!-- CONTROLS: tags filter + sort -->
+        <div class="controls">
+          <div class="tag-filters">
+            <button class="tag-btn active" data-tag="all">Tous</button>
+            {allTags.map(tag => (
+              <button class="tag-btn" data-tag={tag}>{tag}</button>
+            ))}
+          </div>
+          <div class="sort-controls">
+            <button class="sort-btn active" data-sort="newest">Plus récent</button>
+            <button class="sort-btn" data-sort="oldest">Plus ancien</button>
+          </div>
+        </div>
+
+        <!-- RESOURCE LIST -->
+        <div class="resource-list" id="resource-list">
+          {resourceFiles.map(resource => {
+            const { title, date, video_url, tags } = resource.frontmatter;
+            const Content = resource.default;
+            return (
+              <details
+                id={resource.slug}
+                class="resource-entry"
+                data-tags={JSON.stringify(tags ?? [])}
+                data-date={date}
+              >
+                <summary>
+                  <span class="resource-title">{title}</span>
+                  <div class="resource-meta">
+                    <time datetime={date}>{new Date(date).toLocaleDateString('fr-FR')}</time>
+                    {video_url && video_url !== '#' && (
+                      <a href={video_url} target="_blank" rel="noopener" class="resource-video-link">▶ vidéo</a>
+                    )}
+                    {tags && tags.map((tag: string) => (
+                      <code class="resource-tag">{tag}</code>
+                    ))}
+                  </div>
+                </summary>
+                <div class="prose resource-body">
+                  <Content />
+                </div>
+              </details>
+            );
+          })}
+        </div>
+
+        <!-- NO RESULTS -->
+        <p class="no-results" id="no-results" style="display:none">
+          Aucune ressource ne correspond à ce filtre.
+        </p>
+      </>
+    ) : (
+      <div class="empty-state">
+        <p>Les ressources seront ajoutées ici, vidéo par vidéo.</p>
+        <p class="hint">Ajoute un fichier <code>.md</code> dans <code>src/content/resources/</code> pour commencer.</p>
+      </div>
+    )}
+  </section>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const list = document.getElementById('resource-list');
+    const noResults = document.getElementById('no-results');
+    if (!list) return;
+
+    const entries = [...list.querySelectorAll<HTMLElement>('.resource-entry')];
+    let activeTag = 'all';
+    let sortOrder: 'newest' | 'oldest' = 'newest';
+
+    // ── Deep link: open + scroll to hash target ──
+    function openFromHash() {
+      const hash = window.location.hash.slice(1);
+      if (!hash) return;
+      const target = document.getElementById(hash);
+      if (target && target.classList.contains('resource-entry')) {
+        (target as HTMLDetailsElement).open = true;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target.style.borderColor = 'var(--jaune)';
+      }
+    }
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+
+    // ── Tag filtering ──
+    document.querySelectorAll<HTMLButtonElement>('.tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelector('.tag-btn.active')?.classList.remove('active');
+        btn.classList.add('active');
+        activeTag = btn.dataset.tag ?? 'all';
+        applyFilters();
+      });
+    });
+
+    // ── Sort ──
+    document.querySelectorAll<HTMLButtonElement>('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelector('.sort-btn.active')?.classList.remove('active');
+        btn.classList.add('active');
+        sortOrder = (btn.dataset.sort as 'newest' | 'oldest') ?? 'newest';
+        applyFilters();
+      });
+    });
+
+    function applyFilters() {
+      // Filter
+      let visible = 0;
+      entries.forEach(entry => {
+        const tags: string[] = JSON.parse(entry.dataset.tags ?? '[]');
+        const show = activeTag === 'all' || tags.includes(activeTag);
+        entry.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+
+      if (noResults) {
+        noResults.style.display = visible === 0 ? '' : 'none';
+      }
+
+      // Sort
+      const sorted = entries
+        .filter(e => e.style.display !== 'none')
+        .sort((a, b) => {
+          const da = new Date(a.dataset.date ?? '').getTime();
+          const db = new Date(b.dataset.date ?? '').getTime();
+          return sortOrder === 'newest' ? db - da : da - db;
+        });
+
+      sorted.forEach(entry => list.appendChild(entry));
+    }
+  });
+</script>
+
+<style>
+  /* ── CONTROLS ── */
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .tag-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 5px;
+    border: 1px solid var(--ghost);
+    background: transparent;
+    color: var(--ghost);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .tag-btn:hover {
+    border-color: var(--jaune);
+    color: var(--jaune);
+  }
+
+  .tag-btn.active {
+    background: var(--jaune);
+    color: var(--bg);
+    border-color: var(--jaune);
+  }
+
+  .sort-controls {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .sort-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: 5px;
+    border: 1px solid var(--ghost);
+    background: transparent;
+    color: var(--ghost);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .sort-btn:hover {
+    border-color: var(--cream);
+    color: var(--cream);
+  }
+
+  .sort-btn.active {
+    background: var(--cream);
+    color: var(--bg);
+    border-color: var(--cream);
+  }
+
+  /* ── RESOURCE LIST ── */
+
+  .resource-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .resource-entry {
+    background: var(--card);
+    border: 1px solid var(--ghost);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .resource-entry[open] {
+    border-color: var(--jaune);
+  }
+
+  .resource-entry summary {
+    padding: 1.2rem 1.5rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .resource-entry summary::-webkit-details-marker { display: none; }
+
+  .resource-title {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+
+  .resource-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .resource-meta time {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ghost);
+  }
+
+  .resource-video-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--rose);
+    text-decoration: none;
+  }
+
+  .resource-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    background: var(--bg);
+    color: var(--jaune);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .resource-body {
+    padding: 0 1.5rem 1.5rem;
+    border-top: 1px solid var(--ghost);
+    padding-top: 1rem;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--ghost);
+    font-size: 1rem;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--ghost);
+  }
+
+  .empty-state p { margin-bottom: 0.8rem; }
+
+  .hint code {
+    font-family: 'DM Mono', monospace;
+    background: var(--card);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: var(--jaune);
+  }
+
+  @media (max-width: 600px) {
+    .controls { flex-direction: column; }
+  }
+</style>
