@@ -1,7 +1,7 @@
 ---
 title: "WASM & WebGPU — Le Web natif"
 date: 2026-03-25
-video_url: "#"
+video_url: "https://youtu.be/u7_GEoyJjSs"
 tags: ["WASM", "WebGPU", "web", "performance"]
 ---
 

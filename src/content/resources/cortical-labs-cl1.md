@@ -1,7 +1,7 @@
 ---
 title: "Cortical Labs - CL1"
 date: 2026-03-25
-video_url: "#"
+video_url: "https://youtu.be/ekxNrC7Tnmo"
 tags: ["IA", "neurosciences", "hardware"]
 ---
 
