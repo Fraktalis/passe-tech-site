@@ -1,7 +1,7 @@
 ---
 title: "litellm : le braquage raté qui a quand même marché"
 date: 2026-04-01
-video_url: "#"
+video_url: "https://youtu.be/UQkpOMEmexs"
 tags: ["liteLLM", "Supply Chain Attack", "Cybersécurité", "Python"]
 ---
 
