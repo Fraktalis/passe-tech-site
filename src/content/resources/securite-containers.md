@@ -1,7 +1,7 @@
 ---
 title: "Ton container Docker n'est pas sécurisé. Voilà pourquoi."
 date: 2026-05-23
-video_url: "#"
+video_url: "https://youtu.be/DmZ8PadGeSg"
 tags: ["Docker", "Containers", "Cybersécurité", "DevOps", "Kubernetes"]
 ---
 
